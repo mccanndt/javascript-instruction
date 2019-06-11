@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+
+<body style="text-align: center">
+    <button onclick="decrement()">-</button>
+    <input type="text" id="output" value="0" disabled=true>
+    <button onclick="increment()">+</button>
+
+    <script>
+        let output = document.getElementById("output");
+        styleText();
+        function decrement() {
+            output.value--;
+            styleText();
+        }
+
+        function increment() {
+            output.value++;
+            styleText();
+        }
+
+        function styleText() {
+            output.style.cssText = "font-size: 12px; color: black;";
+
+            if (output.value % 2 == 0) {
+                output.style.cssText += "color: red;"
+            }
+
+            if (output.value % 3 == 0) {
+                output.style.cssText += "font-style: italic;"
+            }
+
+            if (output.value % 7 == 0) {
+                output.style.cssText += "font-style: bold; font-size: 20px;"
+            }
+        }
+    </script>
+</body>
+
+</html>

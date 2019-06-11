@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+
+<body>
+    <p>This is a label <input id="input-area"> <button onclick="outputText()">Click Me</button></p>
+    <input id="output-area">
+    
+    <script>
+        function outputText() {
+            let input = document.getElementById("input-area");
+            let output = document.getElementById("output-area");
+            output.value = input.value;
+        }
+    </script>
+</body>
+
+</html>
