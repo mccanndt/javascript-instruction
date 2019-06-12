@@ -11,6 +11,22 @@
 </head>
 
 <body>
+    <!-- The Modal -->
+    <div id="myModal" class="modal">
+        <!-- Modal content -->
+        <div class="modal-content">
+            <form id="form">
+                <div class="form-uname">
+                    <label>Enter your name:</label>
+                    <input id="nameField" type="text" maxlength="15"></input>
+                </div>
+                <div class="form-sub">
+                    <button onclick="getUserName()" type="button">Play!</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
     <canvas id="canvas"></canvas>
 </body>
 <script src="static/game.js"></script>

@@ -29,8 +29,8 @@ let players = {};
 io.on("connection", function (socket) {
   socket.on("new player", function (pName) {
     players[socket.id] = {
-      x: 300,
-      y: 300,
+      x: Math.floor((Math.random() * 1240) + 20),
+      y: Math.floor((Math.random() * 680) + 20),
       color: randomColor(),
       name: pName,
       size: randomSize(),
@@ -41,27 +41,48 @@ io.on("connection", function (socket) {
 
   socket.on("movement", function (data) {
     let player = players[socket.id] || {};
-    if (data.left) {
+    // LEFT
+    if (data.left && (!data.up && !data.down)) {
       if (player.x > 10) {
         player.x -= 5;
       }
+    } else if (data.left) {
+      if (player.x > 10) {
+        player.x -= 3.536;
+      }
     }
-    if (data.up) {
+    // UP
+    if (data.up && (!data.left && !data.right)) {
       if (player.y > 10) {
         player.y -= 5;
       }
+    } else if (data.up) {
+      if (player.y > 10) {
+        player.y -= 3.536;
+      }
     }
-    if (data.right) {
-      if (player.x < 790) {
+    // RIGHT
+    if (data.right && (!data.up && !data.down)) {
+      if (player.x < 1270) {
         player.x += 5;
       }
-    }
-    if (data.down) {
-      if (player.y < 590) {
-        player.y += 5;
+    } else if (data.right) {
+      if (player.x < 1270) {
+        player.x += 3.536;
       }
     }
-    //player.size = getPlayerSize(player.size, player);
+    // DOWN
+    if (data.down && (!data.left && !data.right)) {
+      if (player.y < 710) {
+        player.y += 5;
+      }
+    } else if (data.down) {
+      if (player.y < 710) {
+        player.y += 3.536;
+      }
+    }
+
+    player.size = getPlayerSize(player.size, player);
     if (Object.keys(players).length > 1) {
       for (let id in players) {
         if (players[id] !== player) {
@@ -98,21 +119,23 @@ function randomColor() {
   return color;
 }
 
+let maxSize = 40;
+let minSize = 5;
+
 function randomSize() {
-  let rand = Math.floor(Math.random() * 17) + 6;
-  console.log("Random size: " + rand);
+  let rand = Math.floor(Math.random() * (maxSize - minSize - 1)) + minSize;
   return rand;
 }
 
 function getPlayerSize(currentSize, player) {
-  if (currentSize < 75 && player.isGrowing) {
+  if (currentSize < maxSize && player.isGrowing) {
     currentSize++;
-    if (currentSize == 75) {
+    if (currentSize == maxSize) {
       player.isGrowing = false;
     }
-  } else if (currentSize > 5 && !player.isGrowing) {
+  } else if (currentSize > minSize && !player.isGrowing) {
     currentSize--;
-    if (currentSize == 5) {
+    if (currentSize == minSize) {
       player.isGrowing = true;
     }
   }

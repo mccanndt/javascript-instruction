@@ -1,9 +1,9 @@
-var socket = io();
+let socket = io();
 socket.on("message", function (data) {
     console.log(data);
 });
 
-var movement = {
+let movement = {
     up: false,
     down: false,
     left: false,
@@ -67,19 +67,21 @@ document.addEventListener("keyup", function (event) {
     }
 });
 
-let name = getPlayerName();
+let name = "";
+let modal = document.getElementById("myModal");
+getPlayerName();
 
-socket.emit("new player", name);
+
 setInterval(function () {
     socket.emit("movement", movement);
 }, 1000 / 60);
 
 let canvas = document.getElementById("canvas");
-canvas.width = 800;
-canvas.height = 600;
+canvas.width = 1280;
+canvas.height = 720;
 let context = canvas.getContext("2d");
 socket.on("state", function (players) {
-    context.clearRect(0, 0, 800, 600);
+    context.clearRect(0, 0, 1280, 720);
     for (let id in players) {
         let player = players[id];
         context.beginPath();
@@ -92,11 +94,24 @@ socket.on("state", function (players) {
 });
 
 socket.on("death", function () {
-    name = getPlayerName();
-    socket.emit("new player", name);
+    getPlayerName();
 });
 
+
 function getPlayerName() {
-    let name = prompt("Please enter your name!");
-    return name;
+    // Get the modal
+    
+    modal.style.display = "block";
+    console.log("getPlayerName");
+    //name = getUserName();
+
+    //return name;
+}
+
+function getUserName() {
+    let nameField = document.getElementById("nameField").value;
+	modal.style.display = "none";
+    name = nameField;
+    console.log("getUsername");
+    socket.emit("new player", name);
 }
