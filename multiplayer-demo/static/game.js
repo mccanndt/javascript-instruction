@@ -68,20 +68,21 @@ document.addEventListener("keyup", function (event) {
 });
 
 let name = "";
-let modal = document.getElementById("myModal");
-getPlayerName();
+let modal = $("#myModal")[0];
+getNameModal();
 
 
 setInterval(function () {
     socket.emit("movement", movement);
 }, 1000 / 60);
 
-let canvas = document.getElementById("canvas");
+let canvas = $("#canvas")[0];
 canvas.width = 1280;
 canvas.height = 720;
 let context = canvas.getContext("2d");
 socket.on("state", function (players) {
     context.clearRect(0, 0, 1280, 720);
+    $("#scoreboard-names").empty();
     for (let id in players) {
         let player = players[id];
         context.beginPath();
@@ -90,28 +91,33 @@ socket.on("state", function (players) {
         context.fillText(player.name, player.x, player.y - (player.size + 7));
         context.textAlign = "center";
         context.fill();
+        updateScoreboard(player);
     }
 });
 
 socket.on("death", function () {
-    getPlayerName();
+    getNameModal();
 });
 
 
-function getPlayerName() {
+function getNameModal() {
     // Get the modal
-    
     modal.style.display = "block";
-    console.log("getPlayerName");
-    //name = getUserName();
-
-    //return name;
 }
 
 function getUserName() {
-    let nameField = document.getElementById("nameField").value;
-	modal.style.display = "none";
+    let nameField = $("#nameField").val();
+    modal.style.display = "none";
     name = nameField;
-    console.log("getUsername");
     socket.emit("new player", name);
+}
+
+function updateScoreboard(player) {
+    let scoreboard = $("#scoreboard-names");
+    scoreboard.append(
+        '<div class="row">' +
+            `<div class="col"><h6>${player.name}</h6></div>` +
+            `<div class="col"><h6>${player.score}</h6></div>` +
+        '</div>'
+    );
 }

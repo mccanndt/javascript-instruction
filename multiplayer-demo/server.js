@@ -35,7 +35,9 @@ io.on("connection", function (socket) {
       name: pName,
       size: randomSize(),
       isGrowing: true,
-      id: socket.id
+      id: socket.id,
+      score: 0,
+      updateScore: true
     };
   });
 
@@ -91,9 +93,11 @@ io.on("connection", function (socket) {
             if (player.size > player2.size) {
               delete players[player2.id];
               io.to(player2.id).emit("death");
+              player.score += 1;
             } else if (player.size < player2.size) {
               delete players[player.id];
               io.to(player.id).emit("death");
+              player2.score += 1;
             }
           }
         }
@@ -152,6 +156,5 @@ function collisionDetect(circle, circle2) {
   if (distY > (circle2.size + circle.size)) {
     return false;
   }
-  //console.log("collided");
   return (distX * distX + distY * distY <= (radii * radii));
 }
