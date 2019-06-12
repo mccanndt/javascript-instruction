@@ -3,6 +3,7 @@ socket.on("message", function (data) {
     console.log(data);
 });
 
+// movement struct
 let movement = {
     up: false,
     down: false,
@@ -69,7 +70,7 @@ document.addEventListener("keyup", function (event) {
 
 let name = "";
 let modal = $("#myModal")[0];
-getNameModal();
+getNameModal(true);
 
 
 setInterval(function () {
@@ -95,21 +96,29 @@ socket.on("state", function (players) {
     }
 });
 
-socket.on("death", function () {
-    getNameModal();
+socket.on("death", function (pScore) {
+    getNameModal(false, pScore);
 });
 
 
-function getNameModal() {
+function getNameModal(isNewPlayer, pScore) {
+    let button = $("#form-button");
     // Get the modal
     modal.style.display = "block";
+    button.empty();
+    if (isNewPlayer) {
+        button.append('<button onclick="getUserName(0)" type="button">Play!</button>');
+    } else {
+        button.append(`<button onclick="getUserName(${pScore})" type="button">Play!</button>` +
+        `<button onclick="getUserName(0)" type="button">Reset Score</button>`);
+    }
 }
 
-function getUserName() {
+function getUserName(pScore) {
     let nameField = $("#nameField").val();
     modal.style.display = "none";
     name = nameField;
-    socket.emit("new player", name);
+    socket.emit("new player", name, pScore);
 }
 
 function updateScoreboard(player) {

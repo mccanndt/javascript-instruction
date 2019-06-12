@@ -25,9 +25,12 @@ server.listen(5000, function () {
 io.on("connection", function (socket) {
 });
 
+// JSON with all players
 let players = {};
+// Once connected, look for the emits from client
 io.on("connection", function (socket) {
-  socket.on("new player", function (pName) {
+  // Runs when a new player is created
+  socket.on("new player", function (pName, pScore) {
     players[socket.id] = {
       x: Math.floor((Math.random() * 1240) + 20),
       y: Math.floor((Math.random() * 680) + 20),
@@ -36,11 +39,12 @@ io.on("connection", function (socket) {
       size: randomSize(),
       isGrowing: true,
       id: socket.id,
-      score: 0,
+      score: pScore,
       updateScore: true
     };
   });
 
+  // Runs on every movement emit
   socket.on("movement", function (data) {
     let player = players[socket.id] || {};
     // LEFT
@@ -84,19 +88,23 @@ io.on("connection", function (socket) {
       }
     }
 
+    // Grow or shrink the player
     player.size = getPlayerSize(player.size, player);
+    
+    // if more than 1 players, check for collision
     if (Object.keys(players).length > 1) {
       for (let id in players) {
         if (players[id] !== player) {
           let player2 = players[id];
           if (collisionDetect(player, player2)) {
+            // Check for who is bigger and add score
             if (player.size > player2.size) {
               delete players[player2.id];
-              io.to(player2.id).emit("death");
+              io.to(player2.id).emit("death", player2.score);
               player.score += 1;
             } else if (player.size < player2.size) {
               delete players[player.id];
-              io.to(player.id).emit("death");
+              io.to(player.id).emit("death", player.score);
               player2.score += 1;
             }
           }
@@ -105,16 +113,18 @@ io.on("connection", function (socket) {
     }
   });
 
+  // Remove disconnected player
   socket.on("disconnect", function () {
-    // remove disconnected player
     delete players[socket.id];
   });
 });
 
+// sends the state command to the client 60 times per second (60FPS)
 setInterval(function () {
   io.sockets.emit("state", players);
 }, 1000 / 60);
 
+// get a random player color
 function randomColor() {
   let hue = Math.floor(Math.random() * 361);
   let sat = Math.floor(Math.random() * 101);
@@ -123,14 +133,15 @@ function randomColor() {
   return color;
 }
 
+// Sizes for the player when shrinking and growing
 let maxSize = 40;
 let minSize = 5;
-
 function randomSize() {
   let rand = Math.floor(Math.random() * (maxSize - minSize - 1)) + minSize;
   return rand;
 }
 
+// Shrink / Grow the player
 function getPlayerSize(currentSize, player) {
   if (currentSize < maxSize && player.isGrowing) {
     currentSize++;
@@ -146,6 +157,7 @@ function getPlayerSize(currentSize, player) {
   return currentSize;
 }
 
+// Detect collision of 2 players
 function collisionDetect(circle, circle2) {
   let distX = Math.abs(circle.x - circle2.x);
   let distY = Math.abs(circle.y - circle2.y);
