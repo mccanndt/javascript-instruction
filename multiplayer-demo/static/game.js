@@ -107,11 +107,20 @@ function getNameModal(isNewPlayer, pScore) {
     modal.style.display = "block";
     button.empty();
     if (isNewPlayer) {
-        button.append('<button onclick="getUserName(0)" type="button">Play!</button>');
+        button.append('<button id="aButton" onclick="getUserName(0)" type="button">Play!</button>');
     } else {
-        button.append(`<button onclick="getUserName(${pScore})" type="button">Play!</button>` +
+        button.append(`<button id="aButton" onclick="getUserName(${pScore})" type="button">Play!</button>` +
         `<button onclick="getUserName(0)" type="button">Reset Score</button>`);
     }
+
+    $("#nameField").keypress(function (e) {
+        var key = e.which;
+        if(key == 13)  // the enter key code
+         {
+           $('button[id = aButton]').click();
+           return false;  
+         }
+       });
 }
 
 function getUserName(pScore) {
