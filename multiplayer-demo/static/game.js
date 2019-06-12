@@ -114,13 +114,15 @@ function getNameModal(isNewPlayer, pScore) {
     }
 
     $("#nameField").keypress(function (e) {
-        var key = e.which;
+        let key = e.which;
         if(key == 13)  // the enter key code
          {
            $('button[id = aButton]').click();
            return false;  
          }
-       });
+    });
+
+    $("#aButton").focus();
 }
 
 function getUserName(pScore) {
