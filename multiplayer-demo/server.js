@@ -44,7 +44,7 @@ io.on("connection", function (socket) {
     };
   });
 
-  // Runs on every movement emit
+  // Run on every movement emit (from client)
   socket.on("movement", function (data) {
     let player = players[socket.id] || {};
     // LEFT
@@ -91,7 +91,7 @@ io.on("connection", function (socket) {
     // Grow or shrink the player
     player.size = getPlayerSize(player.size, player);
     
-    // if more than 1 players, check for collision
+    // If more than 1 players, check for collision
     if (Object.keys(players).length > 1) {
       for (let id in players) {
         if (players[id] !== player) {
@@ -100,10 +100,12 @@ io.on("connection", function (socket) {
             // Check for who is bigger and add score
             if (player.size > player2.size) {
               delete players[player2.id];
+              // Sends the "death" command to the server
               io.to(player2.id).emit("death", player2.score);
               player.score += 1;
             } else if (player.size < player2.size) {
               delete players[player.id];
+              // Sends the "death" command to the server
               io.to(player.id).emit("death", player.score);
               player2.score += 1;
             }
@@ -119,12 +121,12 @@ io.on("connection", function (socket) {
   });
 });
 
-// sends the state command to the client 60 times per second (60FPS)
+// Sends the "state" command to the client 60 times per second (60FPS)
 setInterval(function () {
   io.sockets.emit("state", players);
 }, 1000 / 60);
 
-// get a random player color
+// Get a random player color
 function randomColor() {
   let hue = Math.floor(Math.random() * 361);
   let sat = Math.floor(Math.random() * 101);

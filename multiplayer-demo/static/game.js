@@ -3,7 +3,7 @@ socket.on("message", function (data) {
     console.log(data);
 });
 
-// movement struct
+// Movement struct
 let movement = {
     up: false,
     down: false,
@@ -68,19 +68,23 @@ document.addEventListener("keyup", function (event) {
     }
 });
 
+// Show the modal popup and get the player name
 let name = "";
 let modal = $("#myModal")[0];
 getNameModal(true);
 
-
+// Sends the "movement" command to the server 60 times a sceond (60FPS)
 setInterval(function () {
     socket.emit("movement", movement);
 }, 1000 / 60);
 
+// Canvas set up
 let canvas = $("#canvas")[0];
 canvas.width = 1280;
 canvas.height = 720;
 let context = canvas.getContext("2d");
+
+// Run on every state emit (from server)
 socket.on("state", function (players) {
     context.clearRect(0, 0, 1280, 720);
     $("#scoreboard-names").empty();
@@ -96,15 +100,18 @@ socket.on("state", function (players) {
     }
 });
 
+// Run on every death emit (from server)
 socket.on("death", function (pScore) {
     getNameModal(false, pScore);
 });
 
-
+// Shows the modal and accepts arguemnts for a
+// new connection and an optional score if they died
 function getNameModal(isNewPlayer, pScore) {
     let button = $("#form-button");
-    // Get the modal
+    // Show the modal
     modal.style.display = "block";
+    // Generate buttons depeending on new player or death
     button.empty();
     if (isNewPlayer) {
         button.append('<button id="aButton" onclick="getUserName(0)" type="button">Play!</button>');
@@ -113,6 +120,7 @@ function getNameModal(isNewPlayer, pScore) {
         `<button onclick="getUserName(0)" type="button">Reset Score</button>`);
     }
 
+    // Checks for "Enter" key press while in the modal
     $("#nameField").keypress(function (e) {
         let key = e.which;
         if(key == 13)  // the enter key code
@@ -121,10 +129,10 @@ function getNameModal(isNewPlayer, pScore) {
            return false;  
          }
     });
-
     $("#aButton").focus();
 }
 
+// After modal submit, get the value and send data to server
 function getUserName(pScore) {
     let nameField = $("#nameField").val();
     modal.style.display = "none";
@@ -132,6 +140,7 @@ function getUserName(pScore) {
     socket.emit("new player", name, pScore);
 }
 
+// Update the scoreboard with new players and their score
 function updateScoreboard(player) {
     let scoreboard = $("#scoreboard-names");
     scoreboard.append(
